@@ -11,9 +11,9 @@
 		<version>1.51</version>
 	</parent>
 
-	<groupId>sc.fiji</groupId>
-	<artifactId>Process_Pixels</artifactId>
-	<version>1.0.0</version>
+	<groupId>edu.nyu.physics.GershowLab</groupId>
+	<artifactId>mmf_reader</artifactId>
+	<version>0.0.0-SNAPSHOT</version>
 
 	<name>plugins/Process_Pixels.jar</name>
 	<description>A Maven project implementing an ImageJ 1.x plugin</description>
@@ -55,7 +55,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>Process_Pixels</mainClass>
+					<mainClass>mmf_Reader</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -63,17 +63,27 @@
 
 	<developers>
 		<developer>
-			<id>dscho</id>
-			<name>Johannes Schindelin</name>
-			<email>johannes.schindelin@gmx.de</email>
-			<url>http://loci.wisc.edu/people/johannes-schindelin</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<id>mgershow</id>
+			<name>Marc Gershow</name>
+			<email>marc.gershow@nyu.edu</email>
+			<url>http://physics.nyu.edu/~mhg4</url>
+			<organization>NYU Physics</organization>
+			<organizationUrl>http://physics.nyu.edu</organizationUrl>
 			<roles>
-				<role>architect</role>
+				<role>troublemaker</role>
 				<role>developer</role>
 			</roles>
-			<timezone>-6</timezone>
+			<timezone>-5</timezone>
+		</developer>
+		<developer>
+			<id>nbernat</id>
+			<name>Natalie Bernat</name>			
+			<organization>NYU Physics</organization>
+			<organizationUrl>http://physics.nyu.edu</organizationUrl>
+			<roles>				
+				<role>developer</role>
+			</roles>
+			<timezone>-5</timezone>
 		</developer>
 	</developers>
 
@@ -90,10 +100,10 @@
 	</repositories>
 
 	<scm>
-		<connection>scm:git:git://github.com/imagej/minimal-ij1-plugin</connection>
-		<developerConnection>scm:git:git@github.com:imagej/minimal-ij1-plugin</developerConnection>
+		<connection>scm:git:git://github.com/GershowLab/MMF-ImageJ-Plugin</connection>
+		<developerConnection>scm:git:git@github.com:GershowLab/MMF-ImageJ-Plugin</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/imagej/minimal-ij1-plugin</url>
+		<url>https://github.com/GershowLab/MMF-ImageJ-Plugin</url>
 	</scm>
 
 </project>
