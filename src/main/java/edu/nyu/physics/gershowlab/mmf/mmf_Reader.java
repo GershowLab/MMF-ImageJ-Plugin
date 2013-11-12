@@ -31,7 +31,13 @@ public class mmf_Reader implements PlugIn {
 	private MmfFile raf;					//the mmf file
 	
 	
+	private CommonBackgroundStack currentStack;
 	
+	public ImageProcessor getImage (int frameNumber) {
+		//check if current stack has frame
+		//if not update current stack from mmf file
+		//then get specific frame
+	}
 
 	
 	

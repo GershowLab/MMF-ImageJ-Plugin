@@ -129,4 +129,19 @@ public class MmfFile extends RandomAccessFile {
 		
 		return new ImageStackHeader(idCode, headerSize, stackSize, nframes, pos);
 	}
+	
+	public CommonBackgroundStack getStackForFrame (int frameNumber) {
+		//find correct file location
+		//go to file location
+		//read stack from file
+		//return stack
+	}
+	
+	private CommonBackgroundStack readStack() {
+		//TODO
+	}
+	
+	private BackgroundRemovedImage readBRI() {
+		//TODO
+	}
 }
