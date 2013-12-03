@@ -109,7 +109,7 @@ public class IplImageHeader {
 	    	throw new UnsupportedDataTypeException("Expected IplImage Header to be 112 or 136 bytes");
 	    	
 	    }
-	    private FileInfo getFileInfo() throws IOException {
+	    public FileInfo getFileInfo() throws IOException {
 	    	int bytesPerPixel;
 	    	FileInfo fi = new FileInfo();
 	    	fi.fileFormat = FileInfo.RAW;

@@ -1,30 +1,43 @@
 package edu.nyu.physics.gershowlab.mmf;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
+import ij.IJ;
 import ij.process.ImageProcessor;
 
 public class CommonBackgroundStack {
 
-	private int firstFrame;
-	private int lastFrame;
+	
+	private ImageStackLocator h;
 	ArrayList<BackgroundRemovedImage> bri;
 	ImageProcessor backgroundIm;
-	public CommonBackgroundStack() {
-		// TODO Auto-generated constructor stub
+	public CommonBackgroundStack(ImageStackLocator isl, MmfFile f) throws IOException{
+		try {
+			h = (ImageStackLocator) isl.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		f.seek(isl.filePosition + isl.headerSize);
+		backgroundIm = IplImageHeader.loadIplImage(f);
+		for (int j = 0; j < h.nframes; ++j) {
+			bri.add(f.readBRI(backgroundIm));
+		}
+		if (f.getFilePointer() - h.filePosition != h.stackSize) {
+			IJ.showMessage("WARNING", "incorrect number of bytes read from stack frame " + h.getLastFrame() + " to " + h.getLastFrame() + " at " + h.filePosition);
+		}
 	}
 	
-	public int getFirstFrame() {
-		return firstFrame;
+	public int getStartFrame() {
+		return h.getStartFrame();
 	}
 
 	public int getLastFrame() {
-		return lastFrame;
+		return h.getLastFrame();
 	}
 
-	ImageProcessor getImage(int frameNumber) {
-		ImageProcessor ip =backgroundIm.clone();
-		//TODO restore differences;
-		//bri[frameNumber-firstFrame].restore(ip);
-		return ip;
+	ImageProcessor getImage(int frameNumber) {		
+		return bri.get(frameNumber-h.getLastFrame()).restoreImage();
 	}
 
 }
