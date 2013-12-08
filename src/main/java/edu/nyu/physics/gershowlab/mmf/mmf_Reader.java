@@ -13,11 +13,12 @@
  *  ~Update 12/6/13~
  *  -Wrote a descriptive header
  *  -Reader now extends VirtualStack
- *  -Added run() code to convert file to Virtual Stack
- *  -Added unimplemented makeVirtStackFromMMF() and getProcessor() methods
+ *  -Added run() code
  *  
- *  
- *  
+ *  ~Update 12/8/13
+ *  -The ImageStack vStack is always Null; the MMF file system is used in is place
+ *  -Added getProcessor() method
+ *  -Currently implements the getProcessor and getSize methods of the Virtual Stack
  *  
  */
 package edu.nyu.physics.gershowlab.mmf;
@@ -70,66 +71,24 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 			return;
 		}
 		
-		//Create the Virtual Stack
-		try{	
-			//TODO put correct arguments when this is written; also correct the variables two blocks down
-			vStack = makeStackFromMMF(path, firstFrame, lastFrame, isVirtual, convertToGray, flipVertical);
-		} catch(Exception e){
-			IJ.showMessage("mmfReader","Error on creation of Virtual Stack.\n\n Error: " +e);
+		//Check that the file isn't null
+		if (raf.getNumFrames()==0 || getProcessor(1)==null){
+			IJ.showMessage("mmfReader","Error: Frames missing or empty");
 			return;
 		}
-		
-		//Check that the vStack was made
-		if (vStack==null || (vStack.isVirtual()&&vStack.getProcessor(1)==null))
-			return;
-		
-		//If the file is empty, provide some informative notes:
-		if (vStack.getSize() == 0) {
-			String rangeText = "";
-			if (firstFrame>1 || lastFrame!=0)
-				rangeText = "\nin Range "+firstFrame+
-					(lastFrame>0 ? " - "+lastFrame : " - end");
-			error("Error: No Frames Found"+rangeText);
-			return;
-		}
-		
-		//Make the ImagePlus from the stack, then add the FileInfo
-		imp = new ImagePlus(WindowManager.makeUniqueName(fileName), vStack);
-		/*
-		if (imp.getBitDepth()==16)
-			imp.getProcessor().resetMinAndMax();
-		setFramesPerSecond(imp);
-		*/
+			
+		//Make the ImagePlus and add the FileInfo
+		imp = new ImagePlus(WindowManager.makeUniqueName(fileName), this);
 		FileInfo fi = new FileInfo();
 		fi.fileName = fileName;
 		fi.directory = fileDir;
 		imp.setFileInfo(fi);
 		
-		
 		//Play the movie
 		imp.show("Playing MMF: "+ fileName);
 		
 		
-		//make the reference table (done in MmfFile: parse() ) 
-		//read each stack
-		
-		
-		//Take stack and convert it to imageProcessor
-		
-		
-		//if (debug>0){
-	//		IJ.showMessage("mmfReader","Path Name:\n"+path);
-	//	}
-		
 	}
-	
-	//Creates a Virtual Stack using the MmfFile
-	private ImageStack makeVirtStackFromMMF(path, firstFrame, lastFrame, isVirtual, convertToGray, flipVertical){
-		//TODO
-		//See AVI_Reader: makeStack & readAVI
-	}
-	
-	
 	
 	
 	//Checks that the file exists, or opens a dialog for the user to choose a file. 
@@ -156,9 +115,8 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 	
 	//Returns the ImageProcessor for the specified frame number
 	//	Overrides the method in ImageStack
-	//	Ensures that the frame is in the current mmfStack, and then 
+	//	Ensures that the frame is in the current mmfStack, and then gets the image through CommonBackgroundStack methods
 	public ImageProcessor getProcessor (int frameNumber) {
-		//TODO
 		//check if current stack has frame
 		//if not update current stack from mmf file
 		if(frameNumber<currentStack.getFirstFrame() || frameNumber>currentStack.getLastFrame()){
@@ -170,8 +128,12 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 		
 	}
 	
+	public int getSize() {
+		return raf.getNumFrames();
+	}
 	
 	
+
 	//Main file reader:
 	//		~Processes header
 	//		~Makes the frame tables
