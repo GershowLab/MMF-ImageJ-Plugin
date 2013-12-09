@@ -1,15 +1,22 @@
 package edu.nyu.physics.gershowlab.mmf;
 
+import java.awt.Rectangle;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ij.io.FileInfo;
+import ij.io.ImageReader;
+import ij.process.ImageProcessor;
 import ucar.unidata.io.RandomAccessFile;
+
 
 public class MmfFile extends RandomAccessFile {
 
 	private MmfHeader header;
 	private ArrayList<ImageStackLocator> stackLocations;
 	private boolean parsed = false;
+	private FileInfo backgroundFileInfo = null;
 	
 	public int getNumStacks() {
 		return stackLocations.size();
@@ -141,7 +148,35 @@ public class MmfFile extends RandomAccessFile {
 		//TODO
 	}
 	
-	private BackgroundRemovedImage readBRI() {
-		//TODO
+	BackgroundRemovedImage readBRI(ImageProcessor bak) throws IOException {
+		BackgroundRemovedImageHeader h = new BackgroundRemovedImageHeader(this);
+		BackgroundRemovedImage bri = new BackgroundRemovedImage(h, bak);
+		for (int j = 0; j < h.getNumims(); ++j) {
+			bri.addSubImage(readBRISubIm(bak));
+		}
+		return bri;
+		
 	}
+	
+	 
+	
+	private BRISubImage readBRISubIm(ImageProcessor bak) throws IOException {
+		Rectangle r = new Rectangle();
+		
+		r.x = readInt();
+		r.y = readInt();
+		r.width = readInt();
+		r.height = readInt();
+		ImageProcessor ip = bak.createProcessor(r.width, r.height);
+		FileInfo fi = (FileInfo) backgroundFileInfo.clone();
+		fi.width = r.width;
+		fi.height = r.height;
+    	byte buf[] = new byte[fi.width*fi.height*fi.getBytesPerPixel()];
+    	read(buf);
+    	ByteArrayInputStream bis = new ByteArrayInputStream(buf);
+    	Object pixels = (new ImageReader(fi)).readPixels(bis);
+		ip.setPixels(pixels);
+		return new BRISubImage(ip,r);
+	}
+	
 }

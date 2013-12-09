@@ -1,18 +1,22 @@
 package edu.nyu.physics.gershowlab.mmf;
 
-import ij.gui.Roi;
+import java.awt.Rectangle;
+
+import ij.process.Blitter;
 import ij.process.ImageProcessor;
 
 class BRISubImage {
 
 	private ImageProcessor ip;
-	private Roi loc;
+	private Rectangle loc;
 	
-	public BRISubImage() {
-		// TODO Auto-generated constructor stub
+	public BRISubImage(ImageProcessor ip, Rectangle loc) {
+		this.ip = ip;
+		this.loc = loc;
 	}
 	
 	public void insertIntoImage (ImageProcessor im) {
+		im.copyBits(ip, loc.x, loc.y, Blitter.COPY);
 	}
 
 }
