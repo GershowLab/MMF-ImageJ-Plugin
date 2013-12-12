@@ -64,7 +64,7 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 		}
 		try{	
 			raf = new MmfFile(path, "r");
-			raf.parse();
+			raf.parse();			
 			IJ.showMessage("mmfReader", raf.getReport());
 		} catch(Exception e){
 			IJ.showMessage("mmfReader","Opening of: \n \n"+path+"\n \n was unsuccessful.\n\n Error: " +e);
@@ -126,9 +126,12 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 		}
 		//check if current stack has frame
 		//if not update current stack from mmf file
-		if(frameNumber<currentStack.getStartFrame() || frameNumber>currentStack.getLastFrame()){
+		if (!currentStack.containsFrame(frameNumber)) {
 			currentStack = raf.getStackForFrame(frameNumber);
 		}
+		//if(frameNumber<currentStack.getStartFrame() || frameNumber>currentStack.getLastFrame()){
+			//currentStack = raf.getStackForFrame(frameNumber);
+		//}
 		//then get specific frame
 		if (currentStack == null){
 			return null;

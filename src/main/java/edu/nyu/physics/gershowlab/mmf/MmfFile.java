@@ -18,7 +18,6 @@ public class MmfFile extends RandomAccessFile {
 	private ArrayList<ImageStackLocator> stackLocations;
 	private int lastStackFound = 0;//Index of the last stack that was read
 	private boolean parsed = false;
-	private FileInfo backgroundFileInfo = null;
 	
 	public int getNumStacks() {
 		return stackLocations.size();
@@ -165,8 +164,23 @@ public class MmfFile extends RandomAccessFile {
 			return null; 
 		}
 		
-		
+		//gershow rewrite 12/12
 		ImageStackLocator isl;
+		for (int i=0; i<stackLocations.size(); i++){
+			isl = stackLocations.get(i);
+			if (isl.getStartFrame()<=frameNumber && isl.getLastFrame()>=frameNumber){
+				lastStackFound = i;
+				return isl;
+			}				
+		}
+		int[] startFrames = new int[stackLocations.size()];
+		int[] endFrames = new int[stackLocations.size()];
+		String msg = "frame: " + frameNumber + " not found in startFrames: " + startFrames + " - end frames - " + endFrames;
+		IJ.showMessage("mmfReader",msg);
+		return null;
+		
+		/*
+		//ImageStackLocator isl;
 		//First check if the next consecutive stack has the frame (which it will most of the time)
 		if((lastStackFound+1)<stackLocations.size()){
 			isl = stackLocations.get(lastStackFound+1);
@@ -189,7 +203,7 @@ public class MmfFile extends RandomAccessFile {
 		//The code should never get here, but...
 		IJ.showMessage("mmfReader","Stack Not Found; MmfFile");
 		return null;
-		
+		*/
 	}
 	
 	/*
@@ -198,11 +212,11 @@ public class MmfFile extends RandomAccessFile {
 	}
 	*/
 	
-	BackgroundRemovedImage readBRI(ImageProcessor bak) throws IOException {
+	BackgroundRemovedImage readBRI(ImageProcessor bak, FileInfo backgroundFileInfo) throws IOException {
 		BackgroundRemovedImageHeader h = new BackgroundRemovedImageHeader(this);
 		BackgroundRemovedImage bri = new BackgroundRemovedImage(h, bak);
 		for (int j = 0; j < h.getNumims(); ++j) {
-			bri.addSubImage(readBRISubIm(bak));
+			bri.addSubImage(readBRISubIm(bak, backgroundFileInfo));
 		}
 		return bri;
 		
@@ -210,7 +224,7 @@ public class MmfFile extends RandomAccessFile {
 	
 	 
 	
-	private BRISubImage readBRISubIm(ImageProcessor bak) throws IOException {
+	private BRISubImage readBRISubIm(ImageProcessor bak, FileInfo backgroundFileInfo) throws IOException {
 		Rectangle r = new Rectangle();
 		
 		r.x = readInt();

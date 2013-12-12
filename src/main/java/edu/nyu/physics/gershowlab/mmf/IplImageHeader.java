@@ -168,7 +168,7 @@ public class IplImageHeader {
 	    	return fi;
 	    	
 	    }
-	    private ImageProcessor getImageData(RandomAccessFile raf) throws IOException {
+	    public ImageProcessor getImageData(RandomAccessFile raf) throws IOException {
 	    	
 	    	FileInfo fi = getFileInfo();
 	    	ImageReader ir = new ImageReader(fi);
@@ -206,5 +206,6 @@ public class IplImageHeader {
 	    	return im.getImageData(raf);
 	    	
 	    }
+	    
 }
 
