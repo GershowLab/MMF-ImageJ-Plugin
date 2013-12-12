@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ij.IJ;
 import ij.io.FileInfo;
 import ij.io.ImageReader;
 import ij.process.ImageProcessor;
@@ -15,6 +16,7 @@ public class MmfFile extends RandomAccessFile {
 
 	private MmfHeader header;
 	private ArrayList<ImageStackLocator> stackLocations;
+	private int lastStackFound = 0;//Index of the last stack that was read
 	private boolean parsed = false;
 	private FileInfo backgroundFileInfo = null;
 	
@@ -88,19 +90,16 @@ public class MmfFile extends RandomAccessFile {
 			throws IOException {
 		super(location, mode, bufferSize);
 		order (LITTLE_ENDIAN);
-		// TODO Auto-generated constructor stub
 	}
 
 	public MmfFile(int bufferSize) {
 		super(bufferSize);
 		order (LITTLE_ENDIAN);
-		// TODO Auto-generated constructor stub
 	}
 
 	public MmfFile(String location, String mode) throws IOException {
 		super(location, mode);
 		order (LITTLE_ENDIAN);
-		// TODO Auto-generated constructor stub
 	}
 
 	/* public MmfHeader readFileHeader() throws IOException
@@ -138,15 +137,66 @@ public class MmfFile extends RandomAccessFile {
 	}
 	
 	public CommonBackgroundStack getStackForFrame (int frameNumber) {
-		//find correct file location
-		//go to file location
+
+		if (frameNumber<0 || frameNumber>getNumFrames()){
+			IJ.showMessage("mmfReader","Frame Index Error; MmfFile");
+			return null; 
+		}
+		
+		//find correct imageStackLocator
+		ImageStackLocator isl = findStackLocForFrame(frameNumber);
+		
 		//read stack from file
-		//return stack
+		CommonBackgroundStack stack = null;
+		try {
+			stack = new CommonBackgroundStack(isl, this);
+			
+		} catch (IOException e) {
+			IJ.showMessage("mmfReader","Getting Stack for Frame was unsuccessful in MmfFile.\n\n Error: " +e);
+			return null; 
+		}
+		return stack;
 	}
 	
-	private CommonBackgroundStack readStack() {
-		//TODO
+	//Currently checks if the frame is in the stack immediately after 
+	private ImageStackLocator findStackLocForFrame(int frameNumber){
+		if (frameNumber<0 || frameNumber>=getNumFrames()){
+			IJ.showMessage("mmfReader","Frame Index Error; MmfFile");
+			return null; 
+		}
+		
+		
+		ImageStackLocator isl;
+		//First check if the next consecutive stack has the frame (which it will most of the time)
+		if((lastStackFound+1)<stackLocations.size()){
+			isl = stackLocations.get(lastStackFound+1);
+			if (isl.getStartFrame()<=frameNumber && isl.getLastFrame()>=frameNumber){
+				lastStackFound++;
+				return isl;
+			}
+		}
+		//Then do a linear search.
+		//TODO Optimize this for random access
+		else{
+			for (int i=0; i<stackLocations.size(); i++){
+				isl = stackLocations.get(i);
+				if (isl.getStartFrame()<=frameNumber && isl.getLastFrame()>=frameNumber){
+					lastStackFound = i;
+					return isl;
+				}				
+			}
+		}
+		//The code should never get here, but...
+		IJ.showMessage("mmfReader","Stack Not Found; MmfFile");
+		return null;
+		
 	}
+	
+	/*
+	private CommonBackgroundStack readStack() {
+		
+	}
+	*/
 	
 	BackgroundRemovedImage readBRI(ImageProcessor bak) throws IOException {
 		BackgroundRemovedImageHeader h = new BackgroundRemovedImageHeader(this);
@@ -168,6 +218,7 @@ public class MmfFile extends RandomAccessFile {
 		r.width = readInt();
 		r.height = readInt();
 		ImageProcessor ip = bak.createProcessor(r.width, r.height);
+		//TODO We need the background info here
 		FileInfo fi = (FileInfo) backgroundFileInfo.clone();
 		fi.width = r.width;
 		fi.height = r.height;

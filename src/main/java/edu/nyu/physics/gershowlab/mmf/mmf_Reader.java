@@ -71,6 +71,8 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 			return;
 		}
 		
+		currentStack = raf.getStackForFrame(1);
+		
 		//Check that the file isn't null
 		if (raf.getNumFrames()==0 || getProcessor(1)==null){
 			IJ.showMessage("mmfReader","Error: Frames missing or empty");
@@ -117,12 +119,20 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 	//	Overrides the method in ImageStack
 	//	Ensures that the frame is in the current mmfStack, and then gets the image through CommonBackgroundStack methods
 	public ImageProcessor getProcessor (int frameNumber) {
+		
+		if(frameNumber<0 || frameNumber>raf.getNumFrames()){
+			IJ.showMessage("mmfReader","Frame Index Error; mmf_Reader");
+			return null; 
+		}
 		//check if current stack has frame
 		//if not update current stack from mmf file
 		if(frameNumber<currentStack.getStartFrame() || frameNumber>currentStack.getLastFrame()){
 			currentStack = raf.getStackForFrame(frameNumber);
 		}
 		//then get specific frame
+		if (currentStack == null){
+			return null;
+		}
 		return currentStack.getImage(frameNumber);
 		
 		
