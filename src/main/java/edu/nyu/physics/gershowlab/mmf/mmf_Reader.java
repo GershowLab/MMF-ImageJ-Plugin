@@ -119,7 +119,7 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 	public ImageProcessor getProcessor (int frameNumber) {
 		//check if current stack has frame
 		//if not update current stack from mmf file
-		if(frameNumber<currentStack.getFirstFrame() || frameNumber>currentStack.getLastFrame()){
+		if(frameNumber<currentStack.getStartFrame() || frameNumber>currentStack.getLastFrame()){
 			currentStack = raf.getStackForFrame(frameNumber);
 		}
 		//then get specific frame
