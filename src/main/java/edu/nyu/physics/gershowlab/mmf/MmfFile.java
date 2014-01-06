@@ -160,7 +160,7 @@ public class MmfFile extends RandomAccessFile {
 	//Currently checks if the frame is in the stack immediately after 
 	private ImageStackLocator findStackLocForFrame(int frameNumber){
 		if (frameNumber<0 || frameNumber>=getNumFrames()){
-			IJ.showMessage("mmfReader","Frame Index Error; MmfFile");
+			//IJ.showMessage("mmfReader","Frame Index Error; MmfFile");
 			return null; 
 		}
 		

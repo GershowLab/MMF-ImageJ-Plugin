@@ -40,15 +40,16 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 	//  Multiple numbers can be used for different kinds/levels of debug feedback
 	private int debug = 1;
 	
+	private MmfVirtualStack vStack;
+	
 	private String			path;
 	private String			fileName;
 	private String			fileDir;
-	private MmfFile 		raf;					//the mmf file
-	private	ImageStack		vStack;
+	//private MmfFile 		raf;					//the mmf file
 	private	ImagePlus		imp;
 	
 		
-	private CommonBackgroundStack currentStack;
+	//private CommonBackgroundStack currentStack;
 	
 	
 	/////////////////////////////
@@ -62,25 +63,27 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 			//This is used when the dialog is cancelled
 			return;
 		}
-		try{	
-			raf = new MmfFile(path, "r");
-			raf.parse();			
-			IJ.showMessage("mmfReader", raf.getReport());
+		
+		
+		//Construct virtual stack
+		try{
+			vStack = new MmfVirtualStack(path, fileName, fileDir);
 		} catch(Exception e){
-			IJ.showMessage("mmfReader","Opening of: \n \n"+path+"\n \n was unsuccessful.\n\n Error: " +e);
+			IJ.showMessage("mmfReader","Virtual stack construction was unsuccessful.\n\n Error: " +e);
 			return;
 		}
-		
-		currentStack = raf.getStackForFrame(1);
+
+		//currentStack = raf.getStackForFrame(1);
 		
 		//Check that the file isn't null
-		if (raf.getNumFrames()==0 || getProcessor(1)==null){
-			IJ.showMessage("mmfReader","Error: Frames missing or empty");
+		if (vStack.fileIsNull()){
 			return;
 		}
+
 			
 		//Make the ImagePlus and add the FileInfo
-		imp = new ImagePlus(WindowManager.makeUniqueName(fileName), this);
+		imp = new ImagePlus(WindowManager.makeUniqueName(fileName), vStack);
+		imp.getCalibration().fps = 10;
 		FileInfo fi = new FileInfo();
 		fi.fileName = fileName;
 		fi.directory = fileDir;
@@ -113,36 +116,6 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 		fileDir = dir;
 		path = fileDir + fileName;
 		return path;
-	}
-	
-	//Returns the ImageProcessor for the specified frame number
-	//	Overrides the method in ImageStack
-	//	Ensures that the frame is in the current mmfStack, and then gets the image through CommonBackgroundStack methods
-	public ImageProcessor getProcessor (int frameNumber) {
-		
-		if(frameNumber<0 || frameNumber>raf.getNumFrames()){
-			IJ.showMessage("mmfReader","Frame Index Error; mmf_Reader");
-			return null; 
-		}
-		//check if current stack has frame
-		//if not update current stack from mmf file
-		if (!currentStack.containsFrame(frameNumber)) {
-			currentStack = raf.getStackForFrame(frameNumber);
-		}
-		//if(frameNumber<currentStack.getStartFrame() || frameNumber>currentStack.getLastFrame()){
-			//currentStack = raf.getStackForFrame(frameNumber);
-		//}
-		//then get specific frame
-		if (currentStack == null){
-			return null;
-		}
-		return currentStack.getImage(frameNumber);
-		
-		
-	}
-	
-	public int getSize() {
-		return raf.getNumFrames();
 	}
 	
 	
