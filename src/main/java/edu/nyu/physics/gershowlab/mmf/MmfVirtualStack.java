@@ -76,12 +76,7 @@ public class MmfVirtualStack extends VirtualStack {
 	public String getFileName(){
 		return fileName;
 	}
-	
-	public Object getPixels(int n){
-		Object pixels = getProcessor(n).getPixels();
-		return pixels;
-	}
-	
+
 	//Returns the ImageProcessor for the specified frame number
 	//	Overrides the method in ImageStack
 	//	Ensures that the frame is in the current mmfStack, and then gets the image through CommonBackgroundStack methods

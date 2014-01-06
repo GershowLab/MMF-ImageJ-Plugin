@@ -42,7 +42,8 @@ public class MmfFile extends RandomAccessFile {
 				return -1;
 			}
 		}
-		return stackLocations.get(stackLocations.size()-1).getLastFrame() - stackLocations.get(0).getStartFrame() + 1;
+		return stackLocations.get(stackLocations.size()-1).getLastFrame() - stackLocations.get(0).getStartFrame();
+		//return stackLocations.get(stackLocations.size()-1).getLastFrame() - stackLocations.get(0).getStartFrame() + 1;
 	}
 	
 	public String getReport() {
