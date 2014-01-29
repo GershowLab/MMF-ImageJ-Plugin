@@ -1,29 +1,43 @@
 package edu.nyu.physics.gershowlab.mmf;
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
 
 import ij.*;
-import ij.io.*;
 import ij.process.*;
-import ij.gui.*;
-import ij.plugin.*;
-import ij.plugin.frame.*;
 
+
+/*
+ *	Allows the MMF file to be accessed through ImageJ's ImageStack methods without loading all of the data into memory. 
+ * 
+ *  @author Natalie Bernat
+ *  @author Marc Gershow
+ *  @version 1.0
+ *  @see VirtualStack
+ *  @see MmfFile
+ *  @see CommonBackgroundStack
+ */
 public class MmfVirtualStack extends VirtualStack {
 
 
 	private String			fileName;
 	private String			fileDir;
-	private MmfFile 		raf;					//the mmf file
+	/*
+	 * The MMF file associated with the stack
+	 */
+	private MmfFile 		raf;	
+	/*
+	 * The image depth
+	 */
 	private int 			depth;
 	
+	/*
+	 * The segment of the movie which is currently loaded in memory
+	 */
 	private CommonBackgroundStack currentStack;
 	
-	
-	//TODO Constructors
-	//initialize depth=-1
+	/*
+	 * Creates an MmfVirtualStack from the file specified in the arguments, initially loading the first segment of the movie into memory. 
+	 * 
+	 */
 	public MmfVirtualStack(String path, String fileName, String fileDir){
 		this.fileName = fileName;
 		this.fileDir  = fileDir;
@@ -31,7 +45,6 @@ public class MmfVirtualStack extends VirtualStack {
 		try{	
 			raf = new MmfFile(path, "r");
 			raf.parse();			
-			IJ.showMessage("MmfVirtualStack", raf.getReport());
 		} catch(Exception e){
 			IJ.showMessage("MmfVirtualStack","Opening of: \n \n"+path+"\n \n was unsuccessful.\n\n Error: " +e);
 			return;
@@ -41,6 +54,11 @@ public class MmfVirtualStack extends VirtualStack {
 		
 	}
 	
+	/*
+	 * Indicates whether or not the Mmf file is invalid
+	 * 
+	 * @return		true if the file is invalid, false otherwise 
+	 */
 	public boolean fileIsNull(){
 		//Check that the file isn't null
 		if (raf == null || raf.getNumFrames()==0 || getProcessor(1)==null){
@@ -50,14 +68,23 @@ public class MmfVirtualStack extends VirtualStack {
 		return false;
 	}
 	
+	/*
+	 * Does nothing
+	 */
 	public void addSlice(String name){
 		return;
 	}
 	
+	/*
+	 * Does nothing
+	 */
 	public void deleteLastSlice(){
 		return;
 	}
 	
+	/*
+	 * Does nothing
+	 */
 	public void deleteSlice(int n){
 		return;
 	}
@@ -68,11 +95,14 @@ public class MmfVirtualStack extends VirtualStack {
 		}
 		return depth;
 	}
-	
-	public String getDriectory(){
+
+	public String getDirectory(){
 		return fileDir;
 	}
 	
+	/*
+	 * Returns the file name (not including the directory)
+	 */
 	public String getFileName(){
 		return fileName;
 	}
@@ -80,10 +110,10 @@ public class MmfVirtualStack extends VirtualStack {
 	//Returns the ImageProcessor for the specified frame number
 	//	Overrides the method in ImageStack
 	//	Ensures that the frame is in the current mmfStack, and then gets the image through CommonBackgroundStack methods
+
 	public ImageProcessor getProcessor (int frameNumber) {
 		
 		if(frameNumber<0 || frameNumber>raf.getNumFrames()){
-			//IJ.showMessage("MmfVirtualStack","Frame Index Error; mmf_Reader");
 			return null; 
 		}
 		//check if current stack has frame
@@ -91,9 +121,7 @@ public class MmfVirtualStack extends VirtualStack {
 		if (!currentStack.containsFrame(frameNumber)) {
 			currentStack = raf.getStackForFrame(frameNumber);
 		}
-		//if(frameNumber<currentStack.getStartFrame() || frameNumber>currentStack.getLastFrame()){
-			//currentStack = raf.getStackForFrame(frameNumber);
-		//}
+
 		//then get specific frame
 		if (currentStack == null){
 			return null;
@@ -111,6 +139,9 @@ public class MmfVirtualStack extends VirtualStack {
 		return label;
 	}
 	
+	/*
+	 * Does nothing
+	 */
 	public void setPixels(){
 		return;
 	}
