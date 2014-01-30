@@ -1,4 +1,4 @@
-/* 
+/**
  * 
  *  An ImageJ plugin which converts an MMF file into an ImagePlus and plays the MMF movie. 
  *  ImageJ is opened upon running the reader, and a dialog is opened to choose the MMF file. The movie is stored as a Virtual stack.
@@ -21,24 +21,24 @@ import ij.plugin.*;
 
 public class mmf_Reader extends VirtualStack implements PlugIn {
 
-	/*
+	/**
 	 * The virtual stack containing the MMF movie frames
 	 */
 	private MmfVirtualStack vStack;
 	
-	/*
+	/**
 	 * The full path of the MMF file
 	 */
 	private String			path;
-	/*
+	/**
 	 * The name of the MMF file
 	 */
 	private String			fileName;
-	/*
+	/**
 	 * The directory of the MMF file
 	 */
 	private String			fileDir;	
-	/*
+	/**
 	 * The ImagePlus containing the MMF movie
 	 */
 	private	ImagePlus		imp;
@@ -93,7 +93,7 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 	//Checks that the file exists, or opens a dialog for the user to choose a file. 
 	//  Returns the path name
 	//  Helper method for run()
-	/*
+	/**
 	 * Opens a dialogue to obtain the MMF file path. Also sets parameters fileName, fileDir, and path.
 	 * 
 	 * @return 	A String containing the full path
@@ -119,7 +119,7 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 	
 	
 
-	/*
+	/**
 	 * Opens ImageJ and plays the MMF movie
 	 */
 	public static void main(String[] args) {
