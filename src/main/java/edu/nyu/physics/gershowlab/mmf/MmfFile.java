@@ -11,18 +11,43 @@ import ij.io.ImageReader;
 import ij.process.ImageProcessor;
 import ucar.unidata.io.RandomAccessFile;
 
-
+/**
+ * An implementation of RandomAccessFile tailored to the MMF file format. Provides access to the information contained in the main file header
+ * and the MMF image stack headers. 
+ * <p>
+ * (See https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/v4.0/javadocAll/ucar/unidata/io/RandomAccessFile.html).
+ * @author Marc Gershow
+ * @author Natalie Bernat
+ * @version 1.0
+ * @see RandomAccessFile
+ * @see ImageStackLocator
+ */
 public class MmfFile extends RandomAccessFile {
 
+	/**
+	 * Main MMF header
+	 */
 	private MmfHeader header;
+	/**
+	 * The locations of MMF ImageStacks within the MMF file
+	 */
 	private ArrayList<ImageStackLocator> stackLocations;
-	private int lastStackFound = 0;//Index of the last stack that was read
 	private boolean parsed = false;
 	
+	/**
+	 * Returns the number of MMF ImageStacks
+	 * 
+	 * @return The number of MMF ImageStacks
+	 */
 	public int getNumStacks() {
 		return stackLocations.size();
 	}
 	
+	/**
+	 * Returns the main MMF header
+	 * 
+	 * @return The main MMF header
+	 */
 	public MmfHeader getHeader() {
 		if (!parsed) {
 			try {
@@ -34,6 +59,11 @@ public class MmfFile extends RandomAccessFile {
 		return header;
 	}
 	
+	/**
+	 * Returns the total number of frames in the MMF movie
+	 * 
+	 * @return The total number of frames in the MMF movie
+	 */
 	public int getNumFrames(){
 		if (!parsed) {
 			try {
@@ -43,9 +73,14 @@ public class MmfFile extends RandomAccessFile {
 			}
 		}
 		return stackLocations.get(stackLocations.size()-1).getLastFrame() - stackLocations.get(0).getStartFrame();
-		//return stackLocations.get(stackLocations.size()-1).getLastFrame() - stackLocations.get(0).getStartFrame() + 1;
 	}
-	
+
+	/**
+	 * Returns a status report pertaining to the parsing of the file. Includes the size and number of frames and stacks for the entire MMF, and 
+	 * the number of frames and location for each stack. Indicates parsing errors.
+	 * 
+	 * @return A String containing the status report
+	 */
 	public String getReport() {
 		StringBuilder sb = new StringBuilder();
 		if (!parsed) {
@@ -65,6 +100,12 @@ public class MmfFile extends RandomAccessFile {
 		return sb.toString();
 	}
 	
+	/**
+	 * Reads and stores the main MMF header, and builds the list of MMF ImageStack locations. 
+	 * @throws IOException
+	 * @see MMFHeader
+	 * @see ImageStackLocator
+	 */
 	public void parse() throws IOException {
 		stackLocations = new ArrayList<ImageStackLocator>();
 		seek(0);
@@ -85,26 +126,49 @@ public class MmfFile extends RandomAccessFile {
 	}
 	
 	
-	
+
+	/**
+	 * Creates an MMF file.
+	 * 
+	 * @param location		Location of the file
+	 * @param mode			Access mode, either: r, rw, rws, or rwd
+	 * @param bufferSize	Size of buffer
+	 * @throws IOException
+	 */
 	public MmfFile(String location, String mode, int bufferSize)
 			throws IOException {
 		super(location, mode, bufferSize);
 		order (LITTLE_ENDIAN);
 	}
 
+	/**
+	 * Creates an MMF file.
+	 * 
+	 * @param bufferSize	Size of buffer
+	 */
 	public MmfFile(int bufferSize) {
 		super(bufferSize);
 		order (LITTLE_ENDIAN);
 	}
 
+	/**
+	 * Creates an MMF file.
+	 * 
+	 * @param location		Location of the file
+	 * @param mode			Access mode, either: r, rw, rws, or rwd
+	 * @throws IOException
+	 */
 	public MmfFile(String location, String mode) throws IOException {
 		super(location, mode);
 		order (LITTLE_ENDIAN);
 	}
 
-	/* public MmfHeader readFileHeader() throws IOException
-	 * reads the file header (usually at the beginning of the file) 
-	 * at end of function, file pointer should be positioned at first byte after file header
+
+	/**
+	 * Processes (and returns) the main MMF header, positioning the file pointer at the beginning of the first ImageStack.
+	 * 
+	 * @return The main MMF header
+	 * @throws IOException
 	 */
 	public MmfHeader readFileHeader() throws IOException{
 		long pos = getFilePointer();
@@ -123,7 +187,12 @@ public class MmfFile extends RandomAccessFile {
 	}
 	
 	
-	
+	/**
+	 * Processes (and returns) the header for the MMF ImageStack located at the current file pointer, positioning the file 
+	 * pointer at the beginning of the data in that ImageStack.
+	 * @return The header for the MMF ImageStack located at the current file pointer
+	 * @throws IOException
+	 */
 	public ImageStackHeader readImageStackHeader() throws IOException {
 		long pos = getFilePointer();
 		long idCode = readInt() & 0x00000000ffffffffL;
@@ -136,6 +205,13 @@ public class MmfFile extends RandomAccessFile {
 		return new ImageStackHeader(idCode, headerSize, stackSize, nframes, pos);
 	}
 	
+	/**
+	 * Returns the MMF ImageStack containing the query frame
+	 * 
+	 * @param frameNumber	The query frame 
+	 * @return The MMF ImageStack containing the query frame
+	 * @see CommonBackgroundStack
+	 */
 	public CommonBackgroundStack getStackForFrame (int frameNumber) {
 
 		if (frameNumber<0 || frameNumber>getNumFrames()){
@@ -158,19 +234,21 @@ public class MmfFile extends RandomAccessFile {
 		return stack;
 	}
 	
-	//Currently checks if the frame is in the stack immediately after 
+	/**
+	 * Returns (when possible) the ImageStackLocator containing info about the Stack containing the query frame
+	 * 
+	 * @param frameNumber The query frame
+	 * @return The ImageStackLocator containing info about the Stack containing the query frame
+	 */
 	private ImageStackLocator findStackLocForFrame(int frameNumber){
 		if (frameNumber<0 || frameNumber>=getNumFrames()){
-			//IJ.showMessage("mmfReader","Frame Index Error; MmfFile");
 			return null; 
 		}
 		
-		//gershow rewrite 12/12
 		ImageStackLocator isl;
 		for (int i=0; i<stackLocations.size(); i++){
 			isl = stackLocations.get(i);
 			if (isl.getStartFrame()<=frameNumber && isl.getLastFrame()>=frameNumber){
-				lastStackFound = i;
 				return isl;
 			}				
 		}
@@ -180,39 +258,19 @@ public class MmfFile extends RandomAccessFile {
 		IJ.showMessage("mmfReader",msg);
 		return null;
 		
-		/*
-		//ImageStackLocator isl;
-		//First check if the next consecutive stack has the frame (which it will most of the time)
-		if((lastStackFound+1)<stackLocations.size()){
-			isl = stackLocations.get(lastStackFound+1);
-			if (isl.getStartFrame()<=frameNumber && isl.getLastFrame()>=frameNumber){
-				lastStackFound++;
-				return isl;
-			}
-		}
-		//Then do a linear search.
-		//TODO Optimize this for random access
-		else{
-			for (int i=0; i<stackLocations.size(); i++){
-				isl = stackLocations.get(i);
-				if (isl.getStartFrame()<=frameNumber && isl.getLastFrame()>=frameNumber){
-					lastStackFound = i;
-					return isl;
-				}				
-			}
-		}
-		//The code should never get here, but...
-		IJ.showMessage("mmfReader","Stack Not Found; MmfFile");
-		return null;
-		*/
+
 	}
 	
-	/*
-	private CommonBackgroundStack readStack() {
-		
-	}
-	*/
-	
+	/**
+	 * Processes the data for a background removed image frame, converting it to a BackgroundRemovedImage object.
+	 * 
+	 * @param bak					The background image
+	 * @param backgroundFileInfo	Metadata for the background image
+	 * @return The background removed image 
+	 * @throws IOException
+	 * @see BackgroundRemovedImage
+	 * @see BackgroundRemovedImageHeader
+	 */
 	BackgroundRemovedImage readBRI(ImageProcessor bak, FileInfo backgroundFileInfo) throws IOException {
 		BackgroundRemovedImageHeader h = new BackgroundRemovedImageHeader(this);
 		BackgroundRemovedImage bri = new BackgroundRemovedImage(h, bak);
@@ -224,7 +282,14 @@ public class MmfFile extends RandomAccessFile {
 	}
 	
 	 
-	
+	/**
+	 * Processes (and returns) a subimage for a background removed image.
+	 * 
+	 * @param bak 					The background image
+	 * @param backgroundFileInfo	Metadata for the background image
+	 * @return The subimage
+	 * @throws IOException
+	 */
 	private BRISubImage readBRISubIm(ImageProcessor bak, FileInfo backgroundFileInfo) throws IOException {
 		Rectangle r = new Rectangle();
 		
@@ -233,7 +298,6 @@ public class MmfFile extends RandomAccessFile {
 		r.width = readInt();
 		r.height = readInt();
 		ImageProcessor ip = bak.createProcessor(r.width, r.height);
-		//TODO We need the background info here
 		FileInfo fi = (FileInfo) backgroundFileInfo.clone();
 		fi.width = r.width;
 		fi.height = r.height;

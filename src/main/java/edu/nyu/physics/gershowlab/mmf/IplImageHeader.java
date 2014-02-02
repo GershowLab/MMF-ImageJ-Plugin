@@ -16,7 +16,15 @@ import javax.activation.UnsupportedDataTypeException;
 import java.nio.ByteBuffer;
 
 import ucar.unidata.io.RandomAccessFile;
-
+/**
+ * 
+ * Contains metadata about an image from an MMF movie file, and provides methods to convert the MMF image into an ImageProcessor.
+ * 
+ * @author Marc Gershow
+ * @author Natalie Bernat
+ * @version 1.0
+ * 
+ */
 public class IplImageHeader {
 	
 	private static final int IPL_DEPTH_SIGN =  0x80000000;
@@ -29,38 +37,102 @@ public class IplImageHeader {
 	private static final int IPL_DEPTH_16S = (IPL_DEPTH_SIGN|16);
 	private static final int IPL_DEPTH_32S = (IPL_DEPTH_SIGN|32);
 
-	//TODO suppress warnings
-	    private int nSize; /* sizeof(IplImage) */
-	    private int ID; /* version (=0)*/
-	    private int nChannels; /* Most of OpenCV functions support 1,2,3 or 4 channels */
-	    private int alphaChannel; /* ignored by OpenCV */
-	    private int depth; /* pixel depth in bits: IPL_DEPTH_8U, IPL_DEPTH_8S, IPL_DEPTH_16S,
-	IPL_DEPTH_32S, IPL_DEPTH_32F and IPL_DEPTH_64F are supported */
-	    private byte[] colorModel = new byte[4]; /* ignored by OpenCV */
-	    private byte[] channelSeq = new byte[4]; /* ditto */
-	    private int dataOrder; /* 0 - interleaved color channels, 1 - separate color channels.
-	cvCreateImage can only create interleaved images */
-	    private int origin; /* 0 - top-left origin,
-	1 - bottom-left origin (Windows bitmaps style) */
-	    private int align; /* Alignment of image rows (4 or 8).
-	OpenCV ignores it and uses widthStep instead */
-	    private int width; /* image width in pixels */
-	    private int height; /* image height in pixels */
-	    private long roiPTR;/* image ROI. if NULL, the whole image is selected */
-	    private long maskROIPTR; /* must be NULL */
-	    private long imageIdPTR; /* ditto */
-	    private long tileInfoPTR; /* ditto */
-	    private int imageSize; /* image data size in bytes
-	(==image->height*image->widthStep
-	in case of interleaved data)*/
-	    private long imageDataPTR; /* pointer to aligned image data */
-	    private int widthStep; /* size of aligned image row in bytes */
-	    private int[] BorderMode = new int[4]; /* ignored by OpenCV */
-	    private int[] BorderConst = new int[4]; /* ditto */
-	    private long imageDataOriginPTR; /* pointer to very origin of image data
-	(not necessarily aligned) -
-	needed for correct deallocation */
+		/**
+		 * sizeof(IplImage)
+		 */
+	    private int nSize;
+	    /**
+	     * version (=0)
+	     */
+	    private int ID; 
+	    /**
+	     * Most of OpenCV functions support 1,2,3 or 4 channels
+	     */
+	    private int nChannels; 
+	    /**
+	     * ignored by OpenCV
+	     */
+	    private int alphaChannel;
+	    /**
+	     * pixel depth in bits: IPL_DEPTH_8U, IPL_DEPTH_8S, IPL_DEPTH_16S, IPL_DEPTH_32S, IPL_DEPTH_32F and IPL_DEPTH_64F are supported
+	     */
+	    private int depth; 
+	    /**
+	     * ignored by OpenCV
+	     */
+	    private byte[] colorModel = new byte[4];
+	    /**
+	     * ignored by OpenCV
+	     */
+	    private byte[] channelSeq = new byte[4];
+	    /**
+	     * 0 - interleaved color channels, 1 - separate color channels. cvCreateImage can only create interleaved images
+	     */
+	    private int dataOrder; 
+	    /**
+	     * 0 - top-left origin,	1 - bottom-left origin (Windows bitmaps style)
+	     */
+	    private int origin; 
+	    /**
+	     * Alignment of image rows (4 or 8). OpenCV ignores it and uses widthStep instead
+	     */
+	    private int align; 
+	    /**
+	     * image width in pixels 
+	     */
+	    private int width; 
+	    /**
+	     * image height in pixels 
+	     */
+	    private int height; 
+	    /**
+	     * image ROI. if NULL, the whole image is selected 
+	     */
+	    private long roiPTR; 
+	    /**
+	     * must be NULL 
+	     */
+	    private long maskROIPTR;
+	    /**
+	     * must be NULL 
+	     */
+	    private long imageIdPTR; 
+	    /**
+	     * must be NULL 
+	     */
+	    private long tileInfoPTR;
+	    /**
+	     * image data size in bytes (==image->height*image->widthStep in case of interleaved data)
+	     */
+	    private int imageSize; 
+	    /**
+	     * pointer to aligned image data 
+	     */
+	    private long imageDataPTR; 
+	    /**
+	     * size of aligned image row in bytes
+	     */
+	    private int widthStep; 
+	    /**
+	     * ignored by OpenCV
+	     */
+	    private int[] BorderMode = new int[4];
+	    /**
+	     * ignored by OpenCV
+	     */
+	    private int[] BorderConst = new int[4]; 
+	    /**
+	     * pointer to very origin of image data (not necessarily aligned) - needed for correct deallocation
+	     */
+	    private long imageDataOriginPTR;
 	
+
+	    /**
+	     * Creates an IplImageHeader from the MMF file at the current file pointer location
+	     * 
+	     * @param raf	The MMF file
+	     * @throws IOException
+	     */
 	    public IplImageHeader(RandomAccessFile raf) throws IOException{
 	    	long pos = raf.getFilePointer();
 	    	nSize = raf.readInt();
@@ -99,6 +171,13 @@ public class IplImageHeader {
 		    }
 	    }
 	    
+	    /**
+	     * Returns a number of the appropriate data type (based on the value of nSize) from the MMF file 
+	     * 
+	     * @param raf	The MMF file
+	     * @return A number
+	     * @throws IOException
+	     */
 	    private long readPointer (RandomAccessFile raf) throws IOException {
 	    	switch (nSize) {
 		    	case 112:
@@ -109,6 +188,13 @@ public class IplImageHeader {
 	    	throw new UnsupportedDataTypeException("Expected IplImage Header to be 112 or 136 bytes");
 	    	
 	    }
+	    
+	    /**
+	     * Returns metadata for the image.
+	     *  
+	     * @return Metadata for the image
+	     * @throws IOException
+	     */
 	    public FileInfo getFileInfo() throws IOException {
 	    	int bytesPerPixel;
 	    	FileInfo fi = new FileInfo();
@@ -159,15 +245,17 @@ public class IplImageHeader {
 	    		}
 	    	}
 	    	
-	    	/*
-	    	fi.width = widthStep/(bytesPerPixel*nChannels);
-	    	if (fi.width < width) {
-	    		throw new IOException("widthStep is less than width of pixel row data");
-	    	}
-	    	*/
 	    	return fi;
 	    	
 	    }
+	    
+	    /**
+	     * Reads the image data from the MMF file and returns it as an ImageProcessor
+	     * 
+	     * @param raf the MMF file
+	     * @return An ImageProcessor
+	     * @throws IOException
+	     */
 	    public ImageProcessor getImageData(RandomAccessFile raf) throws IOException {
 	    	
 	    	FileInfo fi = getFileInfo();
@@ -201,6 +289,14 @@ public class IplImageHeader {
 	    	}
 	    	
 	    }
+	    
+	    /**
+	     * Reads and returns an ImageProcessor of the image at the location of the current file pointer in the MMF
+	     * 
+	     * @param raf The MMF file
+	     * @return An ImageProcessor of the image at the location of the current file pointer in the MMF
+	     * @throws IOException
+	     */
 	    public static ImageProcessor loadIplImage (RandomAccessFile raf) throws IOException {
 	    	IplImageHeader im = new IplImageHeader(raf);
 	    	return im.getImageData(raf);
