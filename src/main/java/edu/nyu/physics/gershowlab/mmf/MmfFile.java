@@ -87,7 +87,7 @@ public class MmfFile extends RandomAccessFile {
 				return -1;
 			}
 		}
-		return stackLocations.get(stackLocations.size()-1).getLastFrame() - stackLocations.get(0).getStartFrame();
+		return stackLocations.get(stackLocations.size()-1).getLastFrame() - stackLocations.get(0).getStartFrame() +1;
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class MmfFile extends RandomAccessFile {
 		stackLocations = new ArrayList<ImageStackLocator>();
 		seek(0);
 		header = readFileHeader();
-		int frame = 0;
+		int frame = 1;
 		while (!isAtEndOfFile()) {
 			ImageStackHeader h = readImageStackHeader();
 			stackLocations.add(new ImageStackLocator(h, frame));
