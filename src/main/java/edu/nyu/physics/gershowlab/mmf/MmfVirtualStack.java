@@ -127,7 +127,9 @@ public class MmfVirtualStack extends VirtualStack {
 
 	public ImageProcessor getProcessor (int frameNumber) {
 		
-		if(frameNumber<0 || frameNumber>raf.getNumFrames()){
+		frameNumber -= 1; //imageJ starts at frame 1, instead of at frame 0; mmf is 0-indexed
+		
+		if(frameNumber<0 || frameNumber>=raf.getNumFrames()){
 			return null; 
 		}
 		//check if current stack has frame

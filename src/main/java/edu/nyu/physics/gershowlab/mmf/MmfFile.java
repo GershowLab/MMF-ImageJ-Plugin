@@ -125,7 +125,7 @@ public class MmfFile extends RandomAccessFile {
 		stackLocations = new ArrayList<ImageStackLocator>();
 		seek(0);
 		header = readFileHeader();
-		int frame = 1;
+		int frame = 0; //returned to 0 by MHG - we will fix the range problem by shifting the 1-referenced index passed by ImageJ
 		while (!isAtEndOfFile()) {
 			ImageStackHeader h = readImageStackHeader();
 			stackLocations.add(new ImageStackLocator(h, frame));
