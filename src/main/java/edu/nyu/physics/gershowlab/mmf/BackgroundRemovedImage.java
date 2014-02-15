@@ -28,7 +28,7 @@ import ij.process.ImageProcessor;
  * @see BRISubImage
  */
 
-
+@SuppressWarnings("unused")
 public class BackgroundRemovedImage {
 
 	/**
@@ -42,6 +42,7 @@ public class BackgroundRemovedImage {
 	/**
 	 * The header containing metadata for this frame
 	 */
+
 	private BackgroundRemovedImageHeader header;
 	
 	/**

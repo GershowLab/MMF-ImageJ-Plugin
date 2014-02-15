@@ -39,8 +39,8 @@ import ucar.unidata.io.RandomAccessFile;
  * @version 1.0
  * 
  */
+@SuppressWarnings("unused")
 public class IplImageHeader {
-	
 	private static final int IPL_DEPTH_SIGN =  0x80000000;
 	private static final int IPL_DEPTH_1U = 1;
 	private static final int IPL_DEPTH_8U = 8;
@@ -90,7 +90,8 @@ public class IplImageHeader {
 	    /**
 	     * Alignment of image rows (4 or 8). OpenCV ignores it and uses widthStep instead
 	     */
-	    private int align; 
+
+		private int align; 
 	    /**
 	     * image width in pixels 
 	     */
