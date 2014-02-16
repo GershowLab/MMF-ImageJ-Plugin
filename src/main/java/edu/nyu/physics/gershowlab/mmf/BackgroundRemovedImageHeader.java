@@ -18,6 +18,7 @@ package edu.nyu.physics.gershowlab.mmf;
 import ij.IJ;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import ucar.unidata.io.RandomAccessFile;
 
@@ -61,6 +62,7 @@ public class BackgroundRemovedImageHeader {
 	 */
 	private byte[] restOfHeader;
 	
+	
 	/**
 	 * Creates a BackgroundRemovedImageHeader for the frame located at the current file pointer of the MMF file
 	 * 
@@ -79,6 +81,7 @@ public class BackgroundRemovedImageHeader {
 			int bytesRead = (int) (raf.getFilePointer() - pos);
 			restOfHeader = new byte[headerSizeInBytes - bytesRead];
 			raf.read(restOfHeader);
+			
 			if (raf.getFilePointer() != pos + headerSizeInBytes) {
 				IJ.showMessage("WARNING - BackgroundRemovedImage", "incorrect number of bytes read from header");
 				raf.seek(pos + headerSizeInBytes);
@@ -145,4 +148,10 @@ public class BackgroundRemovedImageHeader {
 	public byte[] getRestOfHeader() {
 		return restOfHeader;
 	}
+
+
+	public ImageMetaData getMetaData() {
+		return ImageMetaData.loadMetaData(ByteBuffer.wrap(restOfHeader));
+	}
+
 }

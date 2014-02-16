@@ -15,6 +15,9 @@ package edu.nyu.physics.gershowlab.mmf;
  * You should have received a copy of the GNU General Public License along with MMF-ImageJ-Plugin.  If not, see http://www.gnu.org/licenses/.
  */
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import ij.process.ImageProcessor;
 
@@ -79,6 +82,13 @@ public class BackgroundRemovedImage {
 		for (int j = 0; j < subim.size(); ++j) {
 			subim.get(j).insertIntoImage(ip);
 		}
+		/*
+		Map<String,Object> m = header.getMetaData().getFieldNamesAndValues();
+		for (Map.Entry<String, Object> entry : m.entrySet())
+		{
+		    ip.set -- hah imageProcessor doesn't have metadata -- screw up!
+		}
+		 */
 		return ip;
 	}
 	
