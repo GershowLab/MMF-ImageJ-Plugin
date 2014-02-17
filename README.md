@@ -1,7 +1,24 @@
-This is our attempt to develop a plugin to read MMF files into ImageJ. 
-Currently it is unfinished code. When we have a stable version, we will release it under an open source license.
-Until then, any redistribution is forbidden.
+MMF-ImageJ-Plugin
+Copyright 2013,2014 by Marc Gershow and Natalie Bernat
 
+MMF-ImageJ-Plugin is free software: you can redistribute it and/or modify it under the terms of the 
+GNU General Public License as published by the Free Software Foundation, either version 3 of the License, 
+or (at your option) any later version.
+ 
+MMF-ImageJ-Plugin is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ 
+You should have received a copy of the GNU General Public License along with MMF-ImageJ-Plugin.  If not, see http://www.gnu.org/licenses/.
+
+---
+Installation instructions: copy mmf_reader-0.0.0-SNAPSHOT.jar to your plugins directory and restart ImageJ
+Plugins>MMF>Import MMF will open a file dialog to select an mmf file. File will be opened as a virtual stack.
+
+This code is still under development. Please let us know of any problems.
+
+---
+ 
+ 
 We began with the minimal Maven project implementing an ImageJ 1.x plugin, available at
 https://github.com/imagej/minimal-ij1-plugin
 
