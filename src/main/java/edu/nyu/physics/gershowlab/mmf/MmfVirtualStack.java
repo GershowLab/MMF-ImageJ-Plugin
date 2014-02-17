@@ -15,6 +15,8 @@ package edu.nyu.physics.gershowlab.mmf;
  * You should have received a copy of the GNU General Public License along with MMF-ImageJ-Plugin.  If not, see http://www.gnu.org/licenses/.
  */
 
+import java.util.Map;
+
 import ij.*;
 import ij.process.*;
 
@@ -48,6 +50,7 @@ public class MmfVirtualStack extends VirtualStack {
 	 */
 	private CommonBackgroundStack currentStack;
 	
+	private ImagePlus imp;
 	/**
 	 * Creates an MmfVirtualStack from the file specified in the arguments, initially loading the first segment of the movie into memory. 
 	 * 
@@ -63,6 +66,7 @@ public class MmfVirtualStack extends VirtualStack {
 			IJ.showMessage("MmfVirtualStack","Opening of: \n \n"+path+"\n \n was unsuccessful.\n\n Error: " +e);
 			return;
 		}
+		imp = null;
 		
 		currentStack = raf.getStackForFrame(1);
 		
@@ -142,9 +146,32 @@ public class MmfVirtualStack extends VirtualStack {
 		if (currentStack == null){
 			return null;
 		}
+		setImagePlusMetadata(currentStack.getImageMetaData(frameNumber));
 		return currentStack.getImage(frameNumber);
 	}
-			
+	
+	@SuppressWarnings("unused")
+	private void logImagePlusMetadata(Map<String,Object> m) {
+		if (m == null) {
+			return;
+		}
+		for (Map.Entry<String, Object> entry : m.entrySet())
+		{
+			IJ.log(entry.getKey() + ": " + entry.getValue().toString());
+//		    imp.setProperty(entry.getKey(), entry.getValue());
+		}
+	}
+	
+	private void setImagePlusMetadata(Map<String,Object> m) {
+		if (m == null || imp == null) {
+			return;
+		}
+		for (Map.Entry<String, Object> entry : m.entrySet())
+		{
+		    imp.setProperty(entry.getKey(), entry.getValue());
+		}
+	}
+	
 	public int getSize() {
 		return raf.getNumFrames();
 	}
@@ -160,6 +187,14 @@ public class MmfVirtualStack extends VirtualStack {
 	 */
 	public void setPixels(){
 		return;
+	}
+
+	public ImagePlus getImagePlus() {
+		return imp;
+	}
+
+	public void setImagePlus(ImagePlus imp) {
+		this.imp = imp;
 	}
 	
 	

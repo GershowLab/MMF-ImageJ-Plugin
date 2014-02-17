@@ -17,6 +17,7 @@ package edu.nyu.physics.gershowlab.mmf;
  */
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import ij.IJ;
 import ij.io.FileInfo;
@@ -125,6 +126,10 @@ public class CommonBackgroundStack {
 			return null;
 		}
 		return bri.get(frameNumber-h.getStartFrame()).restoreImage();
+	}
+	
+	Map<String,Object> getImageMetaData (int frameNumber) {
+		return bri.get(frameNumber-h.getStartFrame()).getMetaData();
 	}
 
 }

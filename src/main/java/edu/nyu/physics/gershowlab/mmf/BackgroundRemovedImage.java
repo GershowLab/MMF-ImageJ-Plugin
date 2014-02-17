@@ -92,5 +92,8 @@ public class BackgroundRemovedImage {
 		return ip;
 	}
 	
+	public Map<String,Object> getMetaData() {
+		return header.getMetaData().getFieldNamesAndValues();
+	}
 
 }

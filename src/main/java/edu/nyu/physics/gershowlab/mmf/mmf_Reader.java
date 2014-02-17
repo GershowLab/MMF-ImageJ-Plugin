@@ -34,7 +34,7 @@ import ij.plugin.*;
  *  @see MmfVirtualStack
  *  
  */
-public class mmf_Reader extends VirtualStack implements PlugIn {
+public class mmf_Reader /*extends VirtualStack*/ implements PlugIn {
 
 	/**
 	 * The virtual stack containing the MMF movie frames
@@ -92,6 +92,7 @@ public class mmf_Reader extends VirtualStack implements PlugIn {
 			
 		//Make the ImagePlus and add the FileInfo
 		imp = new ImagePlus(WindowManager.makeUniqueName(fileName), vStack);
+		vStack.setImagePlus(imp);
 		imp.getCalibration().fps = 10;
 		FileInfo fi = new FileInfo();
 		fi.fileName = fileName;
