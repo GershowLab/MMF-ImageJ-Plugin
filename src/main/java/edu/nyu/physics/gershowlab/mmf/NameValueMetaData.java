@@ -8,7 +8,7 @@ import java.util.Map;
 public class NameValueMetaData extends ImageMetaData {
 
 	@Override
-	public Map<String, Object> getFieldNamesAndValues() {
+	public HashMap<String, Object> getFieldNamesAndValues() {
 		return namesAndValues;
 	}
 
@@ -16,7 +16,7 @@ public class NameValueMetaData extends ImageMetaData {
 	public static final int idCode = 0xc15ac674;
 	
 	
-	private Map<String,Object> namesAndValues;
+	private HashMap<String,Object> namesAndValues;
 
 	
 	public NameValueMetaData(ByteBuffer b) {

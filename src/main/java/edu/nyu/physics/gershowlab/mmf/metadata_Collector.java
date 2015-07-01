@@ -15,7 +15,7 @@ public class metadata_Collector implements PlugIn{
 	MmfFile f;
 	CommonBackgroundStack cbs;
 	
-	private HashMap<String, Vector<Entry>> data;
+	private HashMap<String, Vector<WritableMdatPair>> data;
 	
 	private boolean showData = false;
 	
@@ -78,17 +78,27 @@ public class metadata_Collector implements PlugIn{
 		//Iterate through the frames in the MmfFile and get the metadata
 		int s = cbs.getStartFrame();
 		int e = cbs.getLastFrame();
-		int i=0; //ITERATE OVER I
+		int i=0; //ITERATE OVER I=framenum
 		
 			if ( i>e || i<s){
-				f.getStackForFrame(i);
+				cbs = f.getStackForFrame(i);
 				s = cbs.getStartFrame();
 				e = cbs.getLastFrame();
 			}
-		
-			Map<String, Object> m = cbs.getImageMetaData(i);
-			m.keySet().
 			
+			if (cbs!=null){
+				HashMap<String, Object> m = cbs.getImageMetaData(i);
+				for (String key: m.keySet()){
+					
+					Vector<WritableMdatPair> list = data.get(key);
+					if (list==null){
+						data.put(key, new Vector<WritableMdatPair>());
+						list = data.get(key);
+					}
+					list.add(new WritableMdatPair(i, m.get(key)));
+				}
+
+			}
 	}
 
 	
@@ -111,3 +121,9 @@ public class metadata_Collector implements PlugIn{
 	
 	
 }
+
+
+
+
+
+

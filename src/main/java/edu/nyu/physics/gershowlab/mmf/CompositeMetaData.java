@@ -12,7 +12,7 @@ public class CompositeMetaData extends ImageMetaData {
 	private Vector<ImageMetaData> imd;
 
 	@Override
-	public Map<String, Object> getFieldNamesAndValues() {
+	public HashMap<String, Object> getFieldNamesAndValues() {
 		HashMap<String, Object>hm = new HashMap<String, Object>();
 		for (int j = 0; j < imd.size(); ++j) {
 			hm.putAll(imd.get(j).getFieldNamesAndValues());

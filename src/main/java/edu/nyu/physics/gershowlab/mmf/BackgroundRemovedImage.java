@@ -15,6 +15,7 @@ package edu.nyu.physics.gershowlab.mmf;
  * You should have received a copy of the GNU General Public License along with MMF-ImageJ-Plugin.  If not, see http://www.gnu.org/licenses/.
  */
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -92,7 +93,7 @@ public class BackgroundRemovedImage {
 		return ip;
 	}
 	
-	public Map<String,Object> getMetaData() {
+	public HashMap<String,Object> getMetaData() {
 		return header.getMetaData().getFieldNamesAndValues();
 	}
 

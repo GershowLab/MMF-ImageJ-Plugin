@@ -12,7 +12,7 @@ public class BlankMetaData extends ImageMetaData {
 	}
 
 	@Override
-	public Map<String, Object> getFieldNamesAndValues() {
+	public HashMap<String, Object> getFieldNamesAndValues() {
 		return new HashMap<String,Object>();
 	}
 

@@ -2,11 +2,11 @@ package edu.nyu.physics.gershowlab.mmf;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Map;
+import java.util.HashMap;
 
 public abstract class ImageMetaData {
 
-	public abstract Map<String, Object> getFieldNamesAndValues ();
+	public abstract HashMap<String, Object> getFieldNamesAndValues ();
 	public static final int idCode = 0;
 
 	
