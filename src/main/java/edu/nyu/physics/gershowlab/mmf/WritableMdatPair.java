@@ -2,14 +2,21 @@ package edu.nyu.physics.gershowlab.mmf;
 
 public class WritableMdatPair {
 
-	int frameNum;
+	private int frameNum;
 	
-	Object value;
+	private Object value;
 	
 	public WritableMdatPair(int fNum, Object val){
 		frameNum = fNum;
 		value = val;
 	}
 	
+	public int getFrameNum(){
+		return frameNum;
+	}
+	
+	public Object getValue(){
+		return value;
+	}
 	
 }
