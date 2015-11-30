@@ -65,7 +65,33 @@ public class mmf_Reader /*extends VirtualStack*/ implements PlugIn {
 	// Plugin code begins here //
 	/////////////////////////////
 	
+	public void loadStack(String arg) {
+		path = arg;
+		if (null == path) {
+			//This is used when the dialog is cancelled
+			return;
+		}
+		
+		
+		//Construct virtual stack
+		try{
+			vStack = new MmfVirtualStack(path, fileName, fileDir);
+		} catch(Exception e){
+			System.out.println("Virtual stack construction was unsuccessful.\n\n Error: " +e);
+			IJ.showMessage("mmfReader","Virtual stack construction was unsuccessful.\n\n Error: " +e);
+			return;
+		}
+
+		//Check that the file isn't null
+		if (vStack.fileIsNull()){
+			System.out.println("MMF file null");
+			return;
+		}
+	}
 	
+	public MmfVirtualStack getMmfStack(){
+		return vStack;
+	}
 
 	public void run(String arg) {
 		
@@ -116,7 +142,10 @@ public class mmf_Reader /*extends VirtualStack*/ implements PlugIn {
 	 */
 	private String getPath(String arg) {
 		if (null != arg) {
-			if (0 == arg.indexOf("http://") || new File(arg).exists()){ 
+			File f = new File(arg);
+			if (f.exists()){ 
+				fileName=f.getName();
+				fileDir=f.getParent();
 				return arg;
 			}
 		}
