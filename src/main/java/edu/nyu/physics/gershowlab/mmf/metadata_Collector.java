@@ -1,12 +1,13 @@
 package edu.nyu.physics.gershowlab.mmf;
 
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -19,6 +20,7 @@ public class metadata_Collector implements PlugIn{
 	String path;
 	MmfFile f;
 	CommonBackgroundStack cbs;
+	String dstDir;
 	
 	/**
 	 * A mapping from a data type (String name) to a list of {int framenum, Object value} pairs 
@@ -31,9 +33,21 @@ public class metadata_Collector implements PlugIn{
 	
 	public static void main(String[] args){
 		
-		String path = "C:\\Users\\Natalie\\Documents\\TestExProc\\Collision testing\\berlin@berlin__LIGHT_RANDOM_WALK_S1_112Hz_201402121807.mmf";
+//		String path = "C:\\Users\\Natalie\\Documents\\TestJavaMat\\data\\phototaxis\\berlin@berlin\\LIGHT_RANDOM_WALK_S1_112Hz\\201402121840\\berlin@berlin_LIGHT_RANDOM_WALK_S1_112Hz_201402121840.mmf";
 		
-		metadata_Collector mdc = new metadata_Collector(path); 
+		metadata_Collector mdc = new metadata_Collector(); 
+		
+		if (args!=null && args.length>=1){
+			
+			if (args.length>=2){
+				mdc.dstDir = args[1];
+			}
+			
+			mdc.run(args[0]);
+		}
+
+		
+		
 		
 	}
 	
@@ -53,12 +67,12 @@ public class metadata_Collector implements PlugIn{
 			showData();
 		}
 		
-		saveData("");
+		saveData(getSavePath());
 	}
 	
-	public metadata_Collector(String path){
+	public metadata_Collector(){
 		
-		run(path);
+//		run(path);
 		
 	}
 	
@@ -118,7 +132,7 @@ public class metadata_Collector implements PlugIn{
 				if (fnum==lastFrame){
 					cbs = null;
 				}else{
-					System.out.println("Loading stack for frame "+(fnum+1));
+					//System.out.println("Loading stack for frame "+(fnum+1));
 					try{
 						cbs = f.getStackForFrame(fnum+1);
 					} catch(Exception ex){
@@ -145,14 +159,24 @@ public class metadata_Collector implements PlugIn{
 		System.out.println("Done showing data");
 	}
 	
+	private String getSavePath(){
+		
+		
+		if (dstDir==null || dstDir.equals("")){
+			//Generate new name "*.mdat"
+			return path.replace(".mmf", ".mdat");
+		} else{
+
+			Path p = Paths.get(path.replace(".mmf", ".mdat"));
+			return new File(dstDir, p.getFileName().toString()).getAbsolutePath();
+		}
+		
+	}
+	
 	
 	private void saveData(String savepath){
 		
-		if (savepath.equals("")){
-			//Generate new name "*.mdat"
-			savepath = path.replace(".mmf", ".mdat");
-		}
-
+		
 		try{
 			
 			FileWriter fw = new FileWriter(savepath);
