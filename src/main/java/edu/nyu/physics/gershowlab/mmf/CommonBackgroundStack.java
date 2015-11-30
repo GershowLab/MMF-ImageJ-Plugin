@@ -18,7 +18,6 @@ package edu.nyu.physics.gershowlab.mmf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import ij.IJ;
 import ij.io.FileInfo;

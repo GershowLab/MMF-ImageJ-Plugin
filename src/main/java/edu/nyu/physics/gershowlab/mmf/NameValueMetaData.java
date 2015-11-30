@@ -3,7 +3,6 @@ package edu.nyu.physics.gershowlab.mmf;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
-import java.util.Map;
 
 public class NameValueMetaData extends ImageMetaData {
 
