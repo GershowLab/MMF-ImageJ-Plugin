@@ -180,7 +180,7 @@ public class IplImageHeader {
 		    for (int i = 0; i < BorderConst.length; ++i) {
 		    	BorderConst[i] = raf.readInt();
 		    }
-		    imageDataOriginPTR = raf.readInt();
+		    imageDataOriginPTR = readPointer(raf);
 		    if (raf.getFilePointer() - pos != nSize) {
 		    	throw new IOException("did not read correct number of bytes from IplImage Header");//should never happen
 		    }
