@@ -6,8 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -167,8 +165,10 @@ public class metadata_Collector implements PlugIn{
 			return path.replace(".mmf", ".mdat");
 		} else{
 
-			Path p = Paths.get(path.replace(".mmf", ".mdat"));
-			return new File(dstDir, p.getFileName().toString()).getAbsolutePath();
+//			Path p = Paths.get(path.replace(".mmf", ".mdat"));
+//			return new File(dstDir, p.getFileName().toString()).getAbsolutePath();
+			String name = path.substring(path.lastIndexOf(System.getProperty("file.separator")), path.length());
+			return new File(dstDir, name).getAbsolutePath();
 		}
 		
 	}
@@ -195,7 +195,7 @@ public class metadata_Collector implements PlugIn{
 	private void writeData(Writer bw) throws IOException{
 		
 		String DELIMITER = ",";
-		String NEWLINE = System.lineSeparator();
+		String NEWLINE = System.getProperty("line.separator");//.lineSeparator();
 		
 		//	row 1   = keys (1st key = 'framenum')
 		bw.append("frameNum");
