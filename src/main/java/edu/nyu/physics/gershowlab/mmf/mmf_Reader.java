@@ -39,7 +39,7 @@ public class mmf_Reader /*extends VirtualStack*/ implements PlugIn {
 	/**
 	 * The virtual stack containing the MMF movie frames
 	 */
-	private MmfVirtualStack vStack;
+	private MmfVirtualStack vStack = null;
 	
 	/**
 	 * The full path of the MMF file
@@ -65,25 +65,20 @@ public class mmf_Reader /*extends VirtualStack*/ implements PlugIn {
 	// Plugin code begins here //
 	/////////////////////////////
 	
-	public void loadStack(String arg) {
+	public mmf_Reader (String path) {
+		loadStack(path);
+	}
+	
+	private void loadStack(String arg) {
 		path = arg;
 		if (null == path) {
 			//This is used when the dialog is cancelled
 			return;
 		}
-		
-		
 		//Construct virtual stack
-		try{
-			vStack = new MmfVirtualStack(path, fileName, fileDir);
-		} catch(Exception e){
-			System.out.println("Virtual stack construction was unsuccessful.\n\n Error: " +e);
-			IJ.showMessage("mmfReader","Virtual stack construction was unsuccessful.\n\n Error: " +e);
-			return;
-		}
-
+		openStack(path);
 		//Check that the file isn't null
-		if (vStack.fileIsNull()){
+		if (vStack == null || vStack.fileIsNull()){
 			System.out.println("MMF file null");
 			return;
 		}
@@ -93,29 +88,26 @@ public class mmf_Reader /*extends VirtualStack*/ implements PlugIn {
 		return vStack;
 	}
 
-	public void run(String arg) {
-		
-		getPath(arg);
-		if (null == path) {
-			//This is used when the dialog is cancelled
-			return;
-		}
-		
-		
-		//Construct virtual stack
+	private void openStack(String path) {
 		try{
-			vStack = new MmfVirtualStack(path, fileName, fileDir);
+			vStack = new MmfVirtualStack(path);
+			fileName = vStack.getFileName();
+			fileDir = vStack.getDirectory();
 		} catch(Exception e){
+			System.out.println("Virtual stack construction was unsuccessful.\n\n Error: " +e);
 			IJ.showMessage("mmfReader","Virtual stack construction was unsuccessful.\n\n Error: " +e);
 			return;
 		}
-
+	}
+	public void run(String arg) {
+		
+		path = getPath(arg);
+		loadStack(arg);
 		//Check that the file isn't null
-		if (vStack.fileIsNull()){
+		if (null == vStack || vStack.fileIsNull()){
 			return;
 		}
-
-			
+	
 		//Make the ImagePlus and add the FileInfo
 		imp = new ImagePlus(WindowManager.makeUniqueName(fileName), vStack);
 		vStack.setImagePlus(imp);
@@ -158,10 +150,22 @@ public class mmf_Reader /*extends VirtualStack*/ implements PlugIn {
 		if (!dir.endsWith("/")) dir += "/";
 		fileName = od.getFileName();
 		fileDir = dir;
-		path = fileDir + fileName;
+		path = new File(fileDir, fileName).getPath();
 		return path;
 	}
+	public void saveMetaData(String savepath){	
+		if (vStack == null) {
+			return;
+		}
+		vStack.saveMetaData(savepath);
+	}
 	
+	public void writeMetaData(Writer bw) throws IOException{
+		if (vStack == null) {
+			return;
+		}
+		vStack.writeMetaData(bw);
+	}
 	
 
 	/**

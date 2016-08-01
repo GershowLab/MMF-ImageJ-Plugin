@@ -15,6 +15,10 @@ package edu.nyu.physics.gershowlab.mmf;
  * You should have received a copy of the GNU General Public License along with MMF-ImageJ-Plugin.  If not, see http://www.gnu.org/licenses/.
  */
 
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Map;
 
 import ij.*;
@@ -55,9 +59,10 @@ public class MmfVirtualStack extends VirtualStack {
 	 * Creates an MmfVirtualStack from the file specified in the arguments, initially loading the first segment of the movie into memory. 
 	 * 
 	 */
-	public MmfVirtualStack(String path, String fileName, String fileDir){
-		this.fileName = fileName;
-		this.fileDir  = fileDir;
+	public MmfVirtualStack(String path){
+		File f = new File(path);
+		this.fileName = f.getName();
+		this.fileDir  = f.getParent();
 		depth = -1;
 		try{	
 			raf = new MmfFile(path, "r");
@@ -66,6 +71,8 @@ public class MmfVirtualStack extends VirtualStack {
 			IJ.showMessage("MmfVirtualStack","Opening of: \n \n"+path+"\n \n was unsuccessful.\n\n Error: " +e);
 			return;
 		}
+		
+
 		imp = null;
 		
 		currentStack = raf.getStackForFrame(1);
@@ -85,7 +92,19 @@ public class MmfVirtualStack extends VirtualStack {
 		}
 		return false;
 	}
+	public void saveMetaData(String savepath){	
+		if (raf == null) {
+			return;
+		}
+		new metadata_Collector(raf).saveData(savepath);
+	}
 	
+	public void writeMetaData(Writer bw) throws IOException{
+		if (raf == null) {
+			return;
+		}
+		new metadata_Collector(raf).writeData(bw);
+	}
 	/**
 	 * Does nothing
 	 */

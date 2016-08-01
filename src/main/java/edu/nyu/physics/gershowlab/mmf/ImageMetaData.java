@@ -36,7 +36,9 @@ public abstract class ImageMetaData {
 			case CompositeMetaData.idCode:
 				return new CompositeMetaData(b);
 			default:
-				return null;
+				//some very old mmf files start with 60 bytes of mightexmetadata, just discard this
+				b.position(b.position()+56);
+				return new BlankMetaData(b);
 		}
 	}
 			
