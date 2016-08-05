@@ -50,7 +50,11 @@ public class metadata_Collector implements PlugIn{
 		if (showData){
 			showData();
 		}
-		saveData(getSavePath());
+		if (saveData(getSavePath()) == 0) {
+			IJ.showStatus("metadata saved in " + getSavePath());
+		} else {
+			IJ.showStatus("error saving metadata");
+		}
 	}
 	
 	public metadata_Collector(MmfFile f) {
@@ -190,16 +194,16 @@ public class metadata_Collector implements PlugIn{
 		
 	}
 	
-	
-	public void saveData(String savepath){	
+	public int saveData(String savepath){	
 		try{
 			FileWriter fw = new FileWriter(savepath);
 			BufferedWriter bw = new BufferedWriter(fw);
 			writeData(bw);
 			fw.close();
 			bw.close();
+			return 0;
 		} catch (Exception e){
-			return;
+			return 1;
 		}
 	}
 	

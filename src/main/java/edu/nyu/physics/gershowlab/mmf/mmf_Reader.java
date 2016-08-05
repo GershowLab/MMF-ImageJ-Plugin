@@ -64,13 +64,17 @@ public class mmf_Reader /*extends VirtualStack*/ implements PlugIn {
 	/////////////////////////////
 	// Plugin code begins here //
 	/////////////////////////////
-	
-	public mmf_Reader (String path) {
-		loadStack(path);
+	public mmf_Reader() {
+		
 	}
 	
-	private void loadStack(String arg) {
-		path = arg;
+	public mmf_Reader (String arg) {
+		path = getPath(arg);
+		loadStack();
+	}
+	
+	private void loadStack() {
+		//path = arg;
 		if (null == path) {
 			//This is used when the dialog is cancelled
 			return;
@@ -102,7 +106,7 @@ public class mmf_Reader /*extends VirtualStack*/ implements PlugIn {
 	public void run(String arg) {
 		
 		path = getPath(arg);
-		loadStack(arg);
+		loadStack();
 		//Check that the file isn't null
 		if (null == vStack || vStack.fileIsNull()){
 			return;
